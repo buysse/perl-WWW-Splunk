@@ -151,6 +151,11 @@ sub request {
 	my $request;
 	if (ref $method and ref $method eq 'CODE') {
 		# Most likely a HTTP::Request::Common
+		## Work around a bug (?) in HTTP::Request::Common::GET where 
+		## the headers provided aren't checked with "if (defined ...)"
+		if (!defined $data) {
+			$data = \{ "X-Splunk" => "I see dead servers."};
+		}
 		$request = $method->($url, $data);
 	} else {
 		# A method string
